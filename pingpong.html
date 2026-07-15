@@ -6,7 +6,87 @@
     <title>Ping Pong Game</title>
   </head>
   <body>
-    <game class="game-file"></game>
-    <script type="module"></script>
+    <div id="game-board"></div>
+    <script src="">
+
+
+      // create the app instance
+            const app = new PIXI.Application();
+
+
+      // Initialize the loadout
+            await app.load({
+              backgroundColor: '#FFF',
+              width: 800,
+              height: 800
+            });
+
+            document.querySelector('game-board').appendChild(app.canvas);
+
+            // Create 4 rectangular borders (X, Y, Width, Height)
+
+            const leftBorder = new PIXI.Graphics().beginFill('#E74C3C').drawRect(0, 0, 20, 800);
+            const rightBorder = new PIXI.Graphics().beginFill('#2ECC71').drawRect(780, 0, 20, 800);
+            const topBorder = new PIXI.Graphics().beginFill('#9B59B6').drawRect(0, 0, 800, 200);
+            const bottomBorder = new PIXI.Graphics().beginFill('#F1C40F').drawRect(0, 780, 800, 20);
+
+            app.stage.appendChild(leftBorder, rightBorder, topBorder, bottomBorder);
+
+            // Create the circle for the game
+
+            const circle = new PIXI.Graphics().beginFill('#55F51B').drawCircle(5, 5, 5);
+            circle.x = 450;
+            circle.y = 400;
+            app.stage.addChild(circle);
+
+            // Set up the basic tracking variables
+            let xv = 4;
+            let yv = 4;
+            let hitLeft = false, hitRight = false, hitTop = false, hitBottom = false;
+
+            // Execut the promise
+            const gamePromise = new Promise((resolve) => {
+
+              app.ticker.add(() => {
+                // Update the circle's position
+                circle.x += xv;
+                circle.y += yv;
+
+                // Pixel-Perfect Hit Detection: check edges? instead of the exact center
+                // Ball Radius (5) + Border Thickness (20) = 25px boundary limits
+
+                if (circle.x <= 25) {
+                  xv = -xv;
+                  hitLeft = true;
+                }
+                if (circle.x >= 770) {
+                  xv = -xv;
+                  hitRight = true;
+                }
+                if (circle.y <= 25) {
+                  yv = -yv;
+                  hitTop = true;
+                }
+
+                if (circle.y >= 775) {
+                  yv = -yv;
+                  hitBottom = true;
+                }
+
+                // If all 4 variables have flipped to true resolve the promise
+                if (hitLeft && hitRight && hitTop && hitBottom) {
+                  resolve();
+                }
+
+                });
+              });
+
+              gamePromise.then(() => {
+                alert('Application has been completed. You hit all 4 walls and won the game');
+                app.ticker.stop();
+              });
+    </script>
+
+    <script></script>
   </body>
 </html>
